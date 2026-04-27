@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barkonem IT Services</title>
+<style>
+body { margin:0; font-family: Arial, sans-serif; background:#0b0f19; color:white; }
+section { padding:60px 40px; }
+.hero { display:flex; flex-wrap:wrap; min-height:100vh; }
+.hero-text { flex:1; display:flex; flex-direction:column; justify-content:center; }
+.hero-img { flex:1; background:url('https://images.unsplash.com/photo-1581091870627-3c9a65c9c6c3') center/cover no-repeat; }
+h1 { font-size:48px; margin-bottom:20px; }
+h2 { font-size:36px; }
+p { color:#aaa; max-width:500px; }
+.services { display:flex; gap:20px; flex-wrap:wrap; }
+.card { background:#121826; padding:20px; border-radius:12px; width:300px; }
+.card button { border:1px solid cyan; background:none; color:cyan; padding:10px; cursor:pointer; }
+.light { background:white; color:black; display:flex; flex-wrap:wrap; }
+.light p { color:#333; }
+.form input, .form textarea { width:100%; padding:10px; margin-bottom:10px; background:#121826; border:none; color:white; }
+.form button { background:cyan; border:none; padding:12px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-text">
+    <h1>Seamless IT Support & Systems Maintenance</h1>
+    <p>Optimizing your digital backbone with proactive monitoring and rapid response support.</p>
+  </div>
+  <div class="hero-img"></div>
+</section>
+
+<section>
+  <h2>Our Services</h2>
+  <div class="services">
+    <div class="card">
+      <h3>Enterprise Integration</h3>
+      <p>Custom engineered solutions to optimize operations.</p>
+      <button>Learn More</button>
+    </div>
+    <div class="card">
+      <h3>Network Architecture</h3>
+      <p>High-speed, secure network systems.</p>
+      <button>Learn More</button>
+    </div>
+    <div class="card">
+      <h3>Strategic Consulting</h3>
+      <p>Expert IT planning and audits.</p>
+      <button>Learn More</button>
+    </div>
+  </div>
+</section>
+
+<section class="light">
+  <div style="flex:1; min-height:300px; background:#ddd;"></div>
+  <div style="flex:1; padding:20px;">
+    <h2>Architecting the Future of Enterprise IT</h2>
+    <p>Barkonem delivers high-performance infrastructure and bespoke solutions.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Contact Us</h2>
+  <div class="form">
+    <input placeholder="Full Name">
+    <input placeholder="Email">
+    <textarea placeholder="Project Details"></textarea>
+    <button>Submit</button>
+  </div>
+</section>
+
+</body>
+</html>

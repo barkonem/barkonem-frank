@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frank — Barkonem AI Executive</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #050d1a;
+    --deep: #081424;
+    --panel: #0c1e30;
+    --border: #0e3055;
+    --electric: #0ea5e9;
+    --cyan: #22d3ee;
+    --white: #f0f6ff;
+    --muted: #5b7fa6;
+    --accent: #ff6b2b;
+    --success: #10b981;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --display: 'Bebas Neue', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--sans);
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(14,165,233,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,165,233,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orb */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(14,165,233,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,20,36,0.95);
+    backdrop-filter: blur(12px);
+    flex-shrink: 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--electric), var(--cyan));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-size: 20px;
+    color: var(--navy);
+    letter-spacing: 0;
+    box-shadow: 0 0 20px rgba(14,165,233,0.3);
+  }
+
+  .brand-name {
+    font-family: var(--display);
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--white);
+  }
+
+  .brand-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--electric);
+    letter-spacing: 1px;
+    margin-top: -2px;
+  }
+
+  .agent-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* CHAT AREA */
+  .chat-wrapper {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+  }
+
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+
+  #chat::-webkit-scrollbar { width: 4px; }
+  #chat::-webkit-scrollbar-track { background: transparent; }
+  #chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Messages */
+  .msg {
+    display: flex;
+    gap: 12px;
+    max-width: 820px;
+    animation: msgIn 0.3s ease forwards;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  @keyframes msgIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
+  .msg.frank { align-self: flex-start; }
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .avatar.frank-av {
+    background: linear-gradient(135deg, var(--electric), var(--cyan));
+    color: var(--navy);
+    box-shadow: 0 0 16px rgba(14,165,233,0.25);
+  }
+
+  .avatar.user-av {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--electric);
+    font-size: 12px;
+    font-family: var(--mono);
+  }
+
+  .bubble {
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 680px;
+  }
+
+  .msg.frank .bubble {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--white);
+    border-radius: 4px 12px 12px 12px;
+  }
+
+  .msg.user .bubble {
+    background: linear-gradient(135deg, rgba(14,165,233,0.2), rgba(34,211,238,0.1));
+    border: 1px solid rgba(14,165,233,0.3);
+    color: var(--white);
+    border-radius: 12px 4px 12px 12px;
+  }
+
+  .bubble strong { color: var(--cyan); font-weight: 600; }
+  .bubble em { color: var(--electric); font-style: normal; font-family: var(--mono); font-size: 12px; }
+
+  .bubble .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--electric);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .bubble ul { padding-left: 18px; margin: 8px 0; }
+  .bubble ul li { margin-bottom: 5px; color: #c8dff0; }
+  .bubble ol { padding-left: 18px; margin: 8px 0; }
+  .bubble ol li { margin-bottom: 5px; color: #c8dff0; }
+  .bubble p { margin-bottom: 10px; }
+  .bubble p:last-child { margin-bottom: 0; }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin: 2px;
+  }
+
+  .tag.priority { background: rgba(255,107,43,0.15); color: var(--accent); border: 1px solid rgba(255,107,43,0.3); }
+  .tag.info { background: rgba(14,165,233,0.1); color: var(--electric); border: 1px solid rgba(14,165,233,0.25); }
+
+  /* Divider in frank messages */
+  .bubble hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 12px 0;
+  }
+
+  /* Thinking indicator */
+  .thinking {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px 12px 12px 12px;
+  }
+
+  .thinking span {
+    width: 6px;
+    height: 6px;
+    background: var(--electric);
+    border-radius: 50%;
+    animation: blink 1.2s infinite;
+  }
+
+  .thinking span:nth-child(2) { animation-delay: 0.2s; }
+  .thinking span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  /* INPUT */
+  .input-area {
+    position: relative;
+    z-index: 10;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    background: rgba(8,20,36,0.95);
+    backdrop-filter: blur(12px);
+    flex-shrink: 0;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    transition: border-color 0.2s;
+  }
+
+  .input-row:focus-within { border-color: var(--electric); }
+
+  #userInput {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    resize: none;
+    max-height: 120px;
+    min-height: 22px;
+    overflow-y: auto;
+  }
+
+  #userInput::placeholder { color: var(--muted); }
+
+  #userInput::-webkit-scrollbar { width: 3px; }
+  #userInput::-webkit-scrollbar-thumb { background: var(--border); }
+
+  #sendBtn {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--electric), var(--cyan));
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 0 14px rgba(14,165,233,0.3);
+  }
+
+  #sendBtn:hover { opacity: 0.85; transform: scale(1.05); }
+  #sendBtn:active { transform: scale(0.97); }
+  #sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  #sendBtn svg { width: 16px; height: 16px; fill: var(--navy); }
+
+  .input-hint {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+    padding-left: 2px;
+  }
+
+  /* Quick prompts */
+  .quick-prompts {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .qp-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 5px 12px;
+    background: rgba(14,165,233,0.07);
+    border: 1px solid rgba(14,165,233,0.2);
+    border-radius: 4px;
+    color: var(--electric);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+
+  .qp-btn:hover {
+    background: rgba(14,165,233,0.15);
+    border-color: var(--electric);
+  }
+
+  /* System message */
+  .sys-msg {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    padding: 4px 0 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-logo">B</div>
+    <div>
+      <div class="brand-name">BARKONEM</div>
+      <div class="brand-sub">EXECUTIVE AI SYSTEM</div>
+    </div>
+  </div>
+  <div class="agent-badge">
+    <div class="status-dot"></div>
+    FRANK // AI COO ONLINE
+  </div>
+</header>
+
+<div class="chat-wrapper">
+  <div id="chat">
+    <div class="sys-msg">— SECURE SESSION INITIALIZED —</div>
+  </div>
+</div>
+
+<div class="input-area">
+  <div class="quick-prompts" id="quickPrompts">
+    <button class="qp-btn" onclick="quickSend('Give me the 30-day priorities')">30-DAY PRIORITIES</button>
+    <button class="qp-btn" onclick="quickSend('Build my first 3 service packages with pricing')">SERVICE PACKAGES</button>
+    <button class="qp-btn" onclick="quickSend('Give me the 90-day scaling roadmap')">90-DAY ROADMAP</button>
+    <button class="qp-btn" onclick="quickSend('Build the radiology AI consulting offer')">RADIOLOGY AI</button>
+    <button class="qp-btn" onclick="quickSend('Give me my weekly operating rhythm')">WEEKLY RHYTHM</button>
+  </div>
+  <div class="input-row">
+    <textarea id="userInput" placeholder="Talk to Frank..." rows="1"></textarea>
+    <button id="sendBtn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="input-hint">ENTER to send &nbsp;·&nbsp; SHIFT+ENTER for newline</div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are Frank, the AI Chief Operating Officer, Strategy Advisor, Technical Lead, Help Desk Manager, and Growth Architect for Barkonem.
+
+Barkonem is a premium IT and smart technology company founded by Corey Barkley. The brand is pronounced "bark_on_em." Barkonem provides enterprise network configuration, smart home technology, cybersecurity, monitoring, IT support, and AI-driven technology consulting. The company is starting regionally in the Philadelphia area and surrounding PA counties — Montgomery, Chester, Delaware, Bucks — with openness to South Jersey, and has long-term national expansion ambitions.
+
+Corey has 27 years of radiology experience, including x-ray technologist work, applications consulting for an x-ray equipment manufacturer, and sales consulting. He is also building a separate but connected AI consulting lane focused on radiology workflow optimization, AI adoption, vendor differentiation, and hospital productivity improvement. He is familiar with Carestream Health and may use that relationship as an early entry point.
+
+Your name is Frank. You are Corey's go-to executive AI agent for all decisions related to Barkonem.
+
+Your mission: Help Corey build Barkonem into a premium, trusted, AI-enabled IT company that serves small businesses, home customers, healthcare organizations, and eventually regional/national enterprise clients.
+
+Your operating style:
+- Think like a COO, CTO, sales strategist, brand advisor, help desk manager, cybersecurity/GRC analyst, and AI consultant.
+- Be practical, direct, strategic, and step-by-step.
+- Always prioritize revenue, trust, operational efficiency, client experience, security, and scalability.
+- Give Corey clear next actions, not vague advice.
+- When making recommendations, explain the business reason behind them.
+- When possible, create templates, checklists, scripts, workflows, pricing models, proposals, and implementation plans.
+- Do not simply answer questions; help Corey make decisions.
+
+Corey's current business context:
+- Barkonem has an LLC and EIN.
+- Corey is still building the business foundation, website, service offerings, outreach strategy, and financial position.
+- Corey wants Barkonem positioned as premium, not cheap.
+- Corey is interested in subcontracting cybersecurity and monitoring services when needed.
+- Corey is exploring partnerships such as Cisco, Huntress, and other cybersecurity/IT vendors.
+- Corey is building business credit and personal credit simultaneously.
+- Corey wants revenue quickly but wants the company built properly.
+- Corey is targeting small businesses first but is also open to homeowner monthly service plans.
+- Corey wants to use AI as a major differentiator.
+
+Brand identity: Barkonem should feel premium, powerful, intelligent, protective, and modern.
+
+Core positioning: Barkonem protects, connects, automates, and modernizes businesses and homes through IT, cybersecurity, smart technology, and AI-powered support.
+
+Your responsibilities: Strategic planning, IT help desk support, cybersecurity and GRC, sales and marketing, operations, financial growth, AI implementation, and radiology AI consulting.
+
+Your personality: You are calm, strategic, loyal, sharp, protective, and execution-focused. You are not a cheerleader; you are Corey's operational brain. You challenge weak ideas respectfully and help Corey make better decisions. You speak directly, use clear structure, and keep responses tight and actionable. Use headers, numbered lists, and bold text to organize your output. Lead with the answer, then the reasoning.
+
+Format your responses using clear markdown-style structure with bold headers. Keep language direct and operational — no fluff. When you give plans, give phases and actions. When you give packages, give names, prices, and what's included. Always end with "NEXT MOVE:" telling Corey exactly what to do first.`;
+
+const conversation = [];
+let isLoading = false;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+const input = document.getElementById('userInput');
+input.addEventListener('input', () => autoResize(input));
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+function quickSend(text) {
+  input.value = text;
+  autoResize(input);
+  sendMessage();
+}
+
+function appendMessage(role, html) {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+
+  const av = document.createElement('div');
+  av.className = `avatar ${role === 'frank' ? 'frank-av' : 'user-av'}`;
+  av.textContent = role === 'frank' ? 'F' : 'CB';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = html;
+
+  div.appendChild(av);
+  div.appendChild(bubble);
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function showThinking() {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'msg frank';
+  div.id = 'thinking';
+
+  const av = document.createElement('div');
+  av.className = 'avatar frank-av';
+  av.textContent = 'F';
+
+  const t = document.createElement('div');
+  t.className = 'thinking';
+  t.innerHTML = '<span></span><span></span><span></span>';
+
+  div.appendChild(av);
+  div.appendChild(t);
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function removeThinking() {
+  const t = document.getElementById('thinking');
+  if (t) t.remove();
+}
+
+function formatResponse(text) {
+  // Bold **text**
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Headers ### or ##
+  text = text.replace(/^#{1,3}\s+(.+)$/gm, '<strong style="display:block;margin-top:14px;margin-bottom:6px;color:#22d3ee;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;">$1</strong>');
+  // Numbered lists
+  text = text.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
+  // Bullet lists
+  text = text.replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>');
+  // Wrap consecutive <li> in <ul>
+  text = text.replace(/(<li>.*?<\/li>\n?)+/gs, (m) => `<ul>${m}</ul>`);
+  // Line breaks to <br> for non-list paragraphs
+  text = text.replace(/\n\n/g, '<br><br>');
+  text = text.replace(/\n/g, '<br>');
+  // NEXT MOVE highlight
+  text = text.replace(/NEXT MOVE:/g, '<hr><strong style="color:#ff6b2b;font-family:\'IBM Plex Mono\',monospace;font-size:11px;letter-spacing:1px;">▶ NEXT MOVE:</strong>');
+  return text;
+}
+
+async function sendMessage() {
+  if (isLoading) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Hide quick prompts after first message
+  document.getElementById('quickPrompts').style.display = 'none';
+
+  input.value = '';
+  autoResize(input);
+
+  appendMessage('user', text);
+  conversation.push({ role: 'user', content: text });
+
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+  showThinking();
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: SYSTEM_PROMPT,
+        messages: conversation
+      })
+    });
+
+    const data = await response.json();
+    removeThinking();
+
+    const reply = data.content?.[0]?.text || 'Signal lost. Try again, Corey.';
+    conversation.push({ role: 'assistant', content: reply });
+
+    appendMessage('frank', formatResponse(reply));
+  } catch (err) {
+    removeThinking();
+    appendMessage('frank', '<em style="color:#ff6b2b">Connection error. Check network and retry.</em>');
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+// Auto-send intro on load
+window.addEventListener('load', async () => {
+  await new Promise(r => setTimeout(r, 600));
+  const intro = "Introduce yourself as Frank and then deliver: (1) Barkonem's top 5 business priorities for the next 30 days, (2) the first 3 service packages with pricing, (3) a simple weekly operating rhythm for Corey, (4) a 90-day scaling roadmap, (5) the first radiology AI consulting offer Corey should build.";
+  conversation.push({ role: 'user', content: intro });
+
+  showThinking();
+  document.getElementById('sendBtn').disabled = true;
+  isLoading = true;
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: SYSTEM_PROMPT,
+        messages: conversation
+      })
+    });
+
+    const data = await response.json();
+    removeThinking();
+
+    const reply = data.content?.[0]?.text || 'Initialization error.';
+    conversation.push({ role: 'assistant', content: reply });
+    appendMessage('frank', formatResponse(reply));
+  } catch (e) {
+    removeThinking();
+    appendMessage('frank', 'System initialization failed. Type a message to connect manually.');
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+});
+</script>
+</body>
+</html>
