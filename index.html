@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Frank — Barkonem AI Executive</title>
+<title>Frank-Barkonem AI Assistant</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -404,21 +404,21 @@
 
 <header>
   <div class="brand">
-    <div class="brand-logo">B</div>
+    <img src="barkonem-logo.png" alt="Barkonem Intelligence Logo" style="height:44px;width:auto;object-fit:contain;">
     <div>
-      <div class="brand-name">BARKONEM</div>
-      <div class="brand-sub">EXECUTIVE AI SYSTEM</div>
+      <div class="brand-name">FRANK-BARKONEM</div>
+      <div class="brand-sub">AI ASSISTANT</div>
     </div>
   </div>
   <div class="agent-badge">
     <div class="status-dot"></div>
-    FRANK // AI COO ONLINE
+    FRANK // AI ASSISTANT ONLINE
   </div>
 </header>
 
 <div class="chat-wrapper">
   <div id="chat">
-    <div class="sys-msg">— SECURE SESSION INITIALIZED —</div>
+    <div class="sys-msg">â SECURE SESSION INITIALIZED â</div>
   </div>
 </div>
 
@@ -438,13 +438,13 @@
       </svg>
     </button>
   </div>
-  <div class="input-hint">ENTER to send &nbsp;·&nbsp; SHIFT+ENTER for newline</div>
+  <div class="input-hint">ENTER to send &nbsp;Â·&nbsp; SHIFT+ENTER for newline</div>
 </div>
 
 <script>
 const SYSTEM_PROMPT = `You are Frank, the AI Chief Operating Officer, Strategy Advisor, Technical Lead, Help Desk Manager, and Growth Architect for Barkonem.
 
-Barkonem is a premium IT and smart technology company founded by Corey Barkley. The brand is pronounced "bark_on_em." Barkonem provides enterprise network configuration, smart home technology, cybersecurity, monitoring, IT support, and AI-driven technology consulting. The company is starting regionally in the Philadelphia area and surrounding PA counties — Montgomery, Chester, Delaware, Bucks — with openness to South Jersey, and has long-term national expansion ambitions.
+Barkonem is a premium IT and smart technology company founded by Corey Barkley. The brand is pronounced "bark_on_em." Barkonem provides enterprise network configuration, smart home technology, cybersecurity, monitoring, IT support, and AI-driven technology consulting. The company is starting regionally in the Philadelphia area and surrounding PA counties â Montgomery, Chester, Delaware, Bucks â with openness to South Jersey, and has long-term national expansion ambitions.
 
 Corey has 27 years of radiology experience, including x-ray technologist work, applications consulting for an x-ray equipment manufacturer, and sales consulting. He is also building a separate but connected AI consulting lane focused on radiology workflow optimization, AI adoption, vendor differentiation, and hospital productivity improvement. He is familiar with Carestream Health and may use that relationship as an early entry point.
 
@@ -480,7 +480,7 @@ Your responsibilities: Strategic planning, IT help desk support, cybersecurity a
 
 Your personality: You are calm, strategic, loyal, sharp, protective, and execution-focused. You are not a cheerleader; you are Corey's operational brain. You challenge weak ideas respectfully and help Corey make better decisions. You speak directly, use clear structure, and keep responses tight and actionable. Use headers, numbered lists, and bold text to organize your output. Lead with the answer, then the reasoning.
 
-Format your responses using clear markdown-style structure with bold headers. Keep language direct and operational — no fluff. When you give plans, give phases and actions. When you give packages, give names, prices, and what's included. Always end with "NEXT MOVE:" telling Corey exactly what to do first.`;
+Format your responses using clear markdown-style structure with bold headers. Keep language direct and operational â no fluff. When you give plans, give phases and actions. When you give packages, give names, prices, and what's included. Always end with "NEXT MOVE:" telling Corey exactly what to do first.`;
 
 const conversation = [];
 let isLoading = false;
@@ -558,14 +558,14 @@ function formatResponse(text) {
   // Numbered lists
   text = text.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
   // Bullet lists
-  text = text.replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>');
+  text = text.replace(/^[-â¢]\s+(.+)$/gm, '<li>$1</li>');
   // Wrap consecutive <li> in <ul>
   text = text.replace(/(<li>.*?<\/li>\n?)+/gs, (m) => `<ul>${m}</ul>`);
   // Line breaks to <br> for non-list paragraphs
   text = text.replace(/\n\n/g, '<br><br>');
   text = text.replace(/\n/g, '<br>');
   // NEXT MOVE highlight
-  text = text.replace(/NEXT MOVE:/g, '<hr><strong style="color:#ff6b2b;font-family:\'IBM Plex Mono\',monospace;font-size:11px;letter-spacing:1px;">▶ NEXT MOVE:</strong>');
+  text = text.replace(/NEXT MOVE:/g, '<hr><strong style="color:#ff6b2b;font-family:\'IBM Plex Mono\',monospace;font-size:11px;letter-spacing:1px;">â¶ NEXT MOVE:</strong>');
   return text;
 }
 
