@@ -404,7 +404,7 @@
 
 <header>
   <div class="brand">
-    <img src="barkonem-logo.png" alt="Barkonem Intelligence Logo" style="height:44px;width:auto;object-fit:contain;">
+    <img src="barkonem-logo.png" alt="Barkonem Intelligence Logo" style="height:80px;width:auto;object-fit:contain;">
     <div>
       <div class="brand-name">FRANK-BARKONEM</div>
       <div class="brand-sub">AI ASSISTANT</div>
@@ -617,7 +617,7 @@ async function sendMessage() {
 // Auto-send intro on load
 window.addEventListener('load', async () => {
   await new Promise(r => setTimeout(r, 600));
-  const intro = "Introduce yourself as Frank and then deliver: (1) Barkonem's top 5 business priorities for the next 30 days, (2) the first 3 service packages with pricing, (3) a simple weekly operating rhythm for Corey, (4) a 90-day scaling roadmap, (5) the first radiology AI consulting offer Corey should build.";
+  const intro = "Greet Corey briefly. Introduce yourself as Frank, his AI Chief Operating Officer for Barkonem. End your greeting with: Let's build Barkonem properly.";
   conversation.push({ role: 'user', content: intro });
 
   showThinking();
