@@ -389,6 +389,39 @@
     border-color: var(--electric);
   }
 
+  /* Session toolbar */
+  .session-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 4px;
+  }
+  .session-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 5px 12px;
+    background: rgba(255,107,43,0.08);
+    border: 1px solid rgba(255,107,43,0.25);
+    border-radius: 4px;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .session-btn:hover {
+    background: rgba(255,107,43,0.18);
+    border-color: rgba(255,107,43,0.5);
+  }
+  .session-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--success);
+    letter-spacing: 0.5px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .session-status.visible { opacity: 1; }
+
   /* System message */
   .sys-msg {
     text-align: center;
@@ -429,6 +462,12 @@
     <button class="qp-btn" onclick="quickSend('Give me the 90-day scaling roadmap')">90-DAY ROADMAP</button>
     <button class="qp-btn" onclick="quickSend('Build the radiology AI consulting offer')">RADIOLOGY AI</button>
     <button class="qp-btn" onclick="quickSend('Give me my weekly operating rhythm')">WEEKLY RHYTHM</button>
+  </div>
+  <div class="session-bar">
+    <button class="session-btn" onclick="saveSession()">&#128190; SAVE SESSION</button>
+    <button class="session-btn" onclick="document.getElementById('sessionUpload').click()">&#128228; UPLOAD SESSION</button>
+    <input type="file" id="sessionUpload" accept=".json" style="display:none" onchange="loadSession(this)">
+    <span class="session-status" id="sessionStatus"></span>
   </div>
   <div class="input-row">
     <textarea id="userInput" placeholder="Talk to Frank..." rows="1"></textarea>
@@ -648,6 +687,73 @@ window.addEventListener('load', async () => {
   isLoading = false;
   document.getElementById('sendBtn').disabled = false;
 });
+
+// ── Session Save / Load ─────────────────────────────────────────────────────
+function saveSession() {
+  if (!conversation || conversation.length === 0) {
+    showSessionStatus('Nothing to save yet.');
+    return;
+  }
+  const payload = {
+    version: 1,
+    savedAt: new Date().toISOString(),
+    messageCount: conversation.length,
+    messages: conversation
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'frank-session-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showSessionStatus('Session saved.');
+}
+
+function loadSession(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const payload = JSON.parse(e.target.result);
+      if (!payload.messages || !Array.isArray(payload.messages)) throw new Error('Invalid format');
+
+      // Clear current chat display (keep sys-msg)
+      const chat = document.getElementById('chat');
+      const sysMsg = chat.querySelector('.sys-msg');
+      chat.innerHTML = '';
+      if (sysMsg) chat.appendChild(sysMsg);
+
+      // Restore conversation array
+      conversation.length = 0;
+      payload.messages.forEach(msg => conversation.push(msg));
+
+      // Rebuild visible chat from loaded messages
+      payload.messages.forEach(msg => {
+        if (msg.role === 'user') {
+          appendMessage('user', msg.content);
+        } else if (msg.role === 'assistant') {
+          appendMessage('frank', formatResponse(msg.content));
+        }
+      });
+
+      showSessionStatus('Session loaded (' + payload.messages.length + ' messages).');
+    } catch(err) {
+      showSessionStatus('Error: invalid session file.');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function showSessionStatus(msg) {
+  const el = document.getElementById('sessionStatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 3000);
+}
 </script>
 </body>
 </html>
