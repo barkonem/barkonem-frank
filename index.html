@@ -617,7 +617,7 @@ async function sendMessage() {
 // Auto-send intro on load
 window.addEventListener('load', async () => {
   await new Promise(r => setTimeout(r, 600));
-  const intro = "GGreet Corey briefly. Introduce yourself as Frank, your AI Chief Operating Officer for Barkonem. Do not use an em dash or any special separator. End your greeting with: Let's build Barkonem properly.;
+  const intro = "Greet Corey briefly. Use this exact message as your greeting:\n\nHey Corey, I'm Frank - your AI Chief Operating Officer, Strategy Advisor, Technical Lead, and Growth Architect for Barkonem.\n\nI don't give vague advice. I give you clear decisions, actionable plans, templates, and next moves. I challenge weak ideas and help you build premium value, not cheap volume.\n\nWhat shall we tackle today?";
   conversation.push({ role: 'user', content: intro });
 
   showThinking();
